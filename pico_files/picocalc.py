@@ -5,7 +5,8 @@ from machine import Pin, I2C
 from collections import deque
 import time
 
-import picocalc_system
+from picocalc_system import run as run
+from picocalc_system import files as files
 
 _REG_VER = const(0x01) # fw version
 _REG_CFG = const(0x02) # config
@@ -171,9 +172,9 @@ class PicoKeyboard:
                         self.isAlt = True
                         
                     elif key == 0x81:
-                        picocalc_system.files()
+                        files()
                         print("Enter a Filename to Run:")
-                        picocalc_system.run(input(""))
+                        run(input(""))
                         print("Press Enter to Continue.")
                         
                     else:
