@@ -5,11 +5,12 @@ Build Micropython Normally, While including as user module
 ```
 cd micropython/ports/rp2
 mkdir build && cd build
-cmake .. -DUSER_C_MODULES="Location/Of/PicoCalc-micropython-driver/micropython.cmake" -DMICROPY_BOARD=TARGET BOARD
+cmake .. -DUSER_C_MODULES="Location/Of/PicoCalc-micropython-driver/micropython.cmake" -DMICROPY_BOARD=[TARGET BOARD]
 ```
 Target Boards Can Be:
 * RPI_PICO2
 * RPI_PICO2W
+
 Others untested.
 
 ## INSTALLATION
