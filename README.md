@@ -1,19 +1,6 @@
 # MICROPYTHON DRIVERS FOR PICOCALC
 
-## KEYBOARD DRIVER IN PYTHON  
-Done (tested, work with FBconsole now)
-
-## ILI9488 DRIVER IN C MODULE/PYTHON  
-C part has been done for fast 1,2,4,8 bit LUT operation and 16bit 565RGB, frameBuf based swap class in python . 
-Now using core1 for framebuff update to screen. Much faster REPL display.
-
-## SPEAKER DRIVER  
-N/A
-
-## FUTURE PLAN  
-code editor...
-
-### BUILD
+## BUILD
 Build Micropython Normally, While including as user module
 ```
 cd micropython/ports/rp2
@@ -25,8 +12,21 @@ Target Boards Can Be:
 * RPI_PICO2W
 Others untested.
 
-### INSTALLATION
+## INSTALLATION
 * Flash UF2 to Pico Normally
 * Place Main.py in Pico's Root
+
+## FEATURES
+#### Keyboard Driver
+Done (tested, work with FBconsole now)
+#### ILI9488 Driver In C Module/Python  
+C part has been done for fast 1,2,4,8 bit LUT operation and 16bit 565RGB, frameBuf based swap class in python . 
+Now using core1 for framebuff update to screen. Much faster REPL display.
+#### Speaker Driver
+N/A
+
+## TODO
+Code Editor...
+
 
 FBconsole is a modified version of https://github.com/boochow/FBConsole
