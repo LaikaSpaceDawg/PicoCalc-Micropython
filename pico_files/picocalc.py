@@ -5,6 +5,8 @@ from machine import Pin, I2C
 from collections import deque
 import time
 
+import picocalc_system
+
 _REG_VER = const(0x01) # fw version
 _REG_CFG = const(0x02) # config
 _REG_INT = const(0x03) # interrupt status
@@ -166,7 +168,14 @@ class PicoKeyboard:
                     elif key == 0xa5:
                         self.isCtrl = True
                     elif key == 0xa1:
-                        self.isAlt = True              
+                        self.isAlt = True
+                        
+                    elif key == 0x81:
+                        picocalc_system.files()
+                        print("Enter a Filename to Run:")
+                        picocalc_system.run(input(""))
+                        print("Press Enter to Continue.")
+                        
                     else:
                         if key >=0xB4 and key <= 0xB7:
                         #direction keys
@@ -214,11 +223,6 @@ class PicoKeyboard:
                     elif key == 0xa1:
                         self.isAlt = False   
       
-                    
-                        
-                
-                
-                
                 #self.hardwarekeyBuf.append(key[:])
         #now deside how many keys to send to buf
         requestedkeys = len(buf)
@@ -246,8 +250,3 @@ class PicoKeyboard:
             return None
         else:
             return (requestedkeys-keysLeft)
-
-
-        
-        
-
