@@ -4,6 +4,7 @@
 Build Micropython Normally, While including as user module
 ```
 cd micropython/ports/rp2
+git submodule update --init --recursive
 mkdir build && cd build
 cmake .. -DUSER_C_MODULES="Location/Of/PicoCalc-micropython-driver/micropython.cmake" -DMICROPY_BOARD=[TARGET BOARD]
 ```
@@ -16,7 +17,9 @@ Others untested.
 
 ## INSTALLATION
 * Flash UF2 to Pico Normally
-* Place Files from Within pico_files into Pico's Root Directory
+* Place Files From pico_files into Pico's Root Directory
+
+(Using Thonny is Easiest)
 
 ## FEATURES
 #### Keyboard Driver
