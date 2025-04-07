@@ -3,12 +3,11 @@ import machine
 import sdcard
 
 def human_readable_size(size):
-    # Define size units
     for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
         if size < 1024:
-            return f"{size:.2f} {unit}"  # Format size with 2 decimal places
+            return f"{size:.2f} {unit}"
         size /= 1024
-    return f"{size:.2f} PB"  # Fallback to PB for extremely large files
+    return f"{size:.2f} PB"
 
 def run(filename):
     try:
@@ -62,7 +61,6 @@ def initsd():
     return sd
 
 def killsd(sd="/sd"):
-    # DOESNT WORK
     try:
         uos.umount(sd)
     except Exception as e: 
