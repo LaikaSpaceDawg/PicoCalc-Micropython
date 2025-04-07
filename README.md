@@ -13,8 +13,20 @@ N/A
 ## FUTURE PLAN  
 code editor...
 
-## How to use
-Hold the boot and plug the usb cable to your raspberry pi pico2/2w. Copy the uf2 file to your raspberry pi pico. Using Thonny to transfer the main.py into the flash disk root. Unplug the usb cable and tune on the power on picocalc. 
+### BUILD
+Build Micropython Normally, While including as user module
+```
+cd micropython/ports/rp2
+mkdir build && cd build
+cmake .. -DUSER_C_MODULES="Location/Of/PicoCalc-micropython-driver/micropython.cmake" -DMICROPY_BOARD=TARGET BOARD
+```
+Target Boards Can Be:
+* RPI_PICO2
+* RPI_PICO2W
+Others untested.
 
+### INSTALLATION
+* Flash UF2 to Pico Normally
+* Place Main.py in Pico's Root
 
 FBconsole is a modified version of https://github.com/boochow/FBConsole
