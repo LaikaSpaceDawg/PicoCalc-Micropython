@@ -23,8 +23,13 @@ colors = {
 
 from picocalc_system import run as run
 from picocalc_system import files as files
-        
+
+from picocalc_system import initsd as initsd
+from picocalc_system import killsd as killsd
+
+sd = initsd()
+
 pd = PicoDisplay(320,320)
 kb = PicoKeyboard()
-fb=FBConsole( pd, bgcolor=colors["BLACK"], fgcolor=colors["WHITE"], width=320, height=320,readobj=kb,fontX=8,fontY=10)
+fb=FBConsole(pd, bgcolor=colors["BLACK"], fgcolor=colors["WHITE"], width=320, height=320,readobj=kb,fontX=8,fontY=10)
 os.dupterm(fb)
