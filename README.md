@@ -8,14 +8,15 @@ mkdir build && cd build
 cmake .. -DUSER_C_MODULES="Location/Of/PicoCalc-micropython-driver/micropython.cmake" -DMICROPY_BOARD=[TARGET BOARD]
 ```
 Target Boards Can Be:
+* RPI_PICO
 * RPI_PICO2
-* RPI_PICO2W
+* RPI_PICO2_W
 
 Others untested.
 
 ## INSTALLATION
 * Flash UF2 to Pico Normally
-* Place Main.py in Pico's Root
+* Place Files from Within pico_files into Pico's Root Directory
 
 ## FEATURES
 #### Keyboard Driver
@@ -31,3 +32,6 @@ Code Editor...
 
 
 FBconsole is a modified version of https://github.com/boochow/FBConsole
+
+
+sdcard.py is from [The official Micropython Repository](https://github.com/micropython/micropython-lib/blob/master/micropython/drivers/storage/sdcard/sdcard.py)
