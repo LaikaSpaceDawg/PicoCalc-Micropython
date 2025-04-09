@@ -4,6 +4,7 @@ add_library(usermod_picocalcdisplay INTERFACE)
 # Add our source files to the lib
 target_sources(usermod_picocalcdisplay INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/picocalcdisplay.c
+	${CMAKE_CURRENT_LIST_DIR}/cppmem.c
 )
 
 # Add the current directory as an include directory.
