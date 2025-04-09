@@ -1,6 +1,6 @@
 """
 PicoCalc system functions for micropython
-Written by: Laika, 4/8/2025
+Written by: Laika, 4/9/2025
 
 Requires sdcard.py from the official Micropython repository
 https://github.com/micropython/micropython-lib/blob/master/micropython/drivers/storage/sdcard/sdcard.py
@@ -11,6 +11,7 @@ Features various system functions such as mounting and unmounting the PicoCalc's
 import uos
 import machine
 import sdcard
+import gc
 
 def human_readable_size(size):
     """
@@ -75,6 +76,18 @@ def files(directory="/"):
             print(f"Error accessing {entry}: {e}")
     return
 
+def memory():
+    gc.collect()
+    # Get the available and free RAM
+    free_memory = gc.mem_free()
+    allocated_memory = gc.mem_alloc()
+
+    # Total memory is the sum of free and allocated memory
+    total_memory = free_memory + allocated_memory
+
+    print("Total RAM: {} bytes".format(total_memory))
+    print("Free RAM: {} bytes".format(free_memory))
+    
 def initsd():
     """
     SD Card mounting utility for PicoCalc.
