@@ -5,6 +5,7 @@ import os
 import globals
 from globals import colors
 
+# Change the as [alias] if you want them to use a different command in the REPL
 from picocalc_system import run as run
 from picocalc_system import files as files
 from picocalc_system import memory as memory
