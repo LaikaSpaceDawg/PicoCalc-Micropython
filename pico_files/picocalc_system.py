@@ -164,23 +164,27 @@ def initsd():
     Inputs: None
     Outputs: None (Mounts SD card if it is present)
     """
-    sd = None
-    try:
-        sd = sdcard.SDCard(
-            machine.SPI(0,
-                      baudrate=1000000,
-                      polarity=0,
-                      phase=0,
-                      sck=18,
-                      mosi=19,
-                      miso=16), machine.Pin(17))
-        # Mount filesystem
-        uos.mount(sd, "/sd")
-    except Exception as e:
-        print_color(f"Failed to mount SD card: {e}", colors.ERROR)
-    return sd
+    if globals.sd is None:
+        try:
+            globals.sd = sdcard.SDCard(
+                          machine.SPI(0,
+                          baudrate=1000000,
+                          polarity=0,
+                          phase=0,
+                          sck=18,
+                          mosi=19,
+                          miso=16), machine.Pin(17))
+            # Mount filesystem
+            uos.mount(globals.sd, "/sd")
+            print_color("SD card mounted successfully.", colors.SUCCESS)
+        except Exception as e:
+            print_color(f"Failed to mount SD card: {e}", colors.ERROR)
+            globals.sd = None
+    else:
+        print_color("SD card already mounted.", colors.WARNING)
+    return
 
-def killsd(sd="/sd"):
+def killsd(sd_mnt="/sd"):
     """
     SD Card unmounting utility for PicoCalc.
     Could technically function on any device with uos, since it uses the mount point.
@@ -188,10 +192,12 @@ def killsd(sd="/sd"):
     Inputs: Filepath to SD mount point
     Output: None, unmounts SD
     """
-    try:
-        uos.umount(sd)
-    except Exception as e: 
-        print_color(f"Failed to unmount SD card: {e}", colors.ERROR)
+    if globals.sd is not None:
+        try:
+            uos.umount(sd_mnt)
+            globals.sd = None
+        except Exception as e: 
+            print_color(f"Failed to unmount SD card: {e}", colors.ERROR)
     return
 
 def print_color(message, color):

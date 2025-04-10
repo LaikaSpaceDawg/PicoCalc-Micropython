@@ -23,4 +23,4 @@ kb = PicoKeyboard()
 globals.fb=FBConsole(pd, bgcolor=colors.bgdefault, fgcolor=colors.fgdefault, width=320, height=320,readobj=kb,fontX=8,fontY=10)
 os.dupterm(globals.fb)
 
-sd = initsd()
+initsd()
