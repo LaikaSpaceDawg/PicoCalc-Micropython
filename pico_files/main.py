@@ -2,24 +2,8 @@ from picocalc import PicoDisplay, PicoKeyboard
 from fbconsole import FBConsole
 import os
 
-colors = {
-    "BLACK": 0,
-    "RED": 1,
-    "GREEN": 2,
-    "YELLOW": 3,
-    "BLUE": 4,
-    "PURPLE": 5,
-    "CYAN": 6,
-    "WHITE": 7,
-    "GREY": 8,
-    "BRRED": 9,
-    "BRGREEN": 10,
-    "BRYELLOW": 11,
-    "BRBLUE": 12,
-    "BRPURPLE": 13,
-    "BRCYAN": 14,
-    "BRWHITE": 15
-}
+import globals
+from globals import colors
 
 from picocalc_system import run as run
 from picocalc_system import files as files
@@ -29,9 +13,13 @@ from picocalc_system import disk as disk
 from picocalc_system import initsd as initsd
 from picocalc_system import killsd as killsd
 
-sd = initsd()
+# Change these if you want different colors
+# colors.set_bgdefault(colors.BLACK)
+# colors.set_fgdefault(colors.WHITE)
 
 pd = PicoDisplay(320,320)
 kb = PicoKeyboard()
-fb=FBConsole(pd, bgcolor=colors["BLACK"], fgcolor=colors["WHITE"], width=320, height=320,readobj=kb,fontX=8,fontY=10)
-os.dupterm(fb)
+globals.fb=FBConsole(pd, bgcolor=colors.bgdefault, fgcolor=colors.fgdefault, width=320, height=320,readobj=kb,fontX=8,fontY=10)
+os.dupterm(globals.fb)
+
+sd = initsd()

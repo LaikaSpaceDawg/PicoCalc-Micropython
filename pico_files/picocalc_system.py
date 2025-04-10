@@ -14,6 +14,9 @@ import machine
 import sdcard
 import gc
 
+import globals
+from globals import colors
+
 def human_readable_size(size):
     """
     Returns input size in bytes in a human-readable format
@@ -28,7 +31,6 @@ def human_readable_size(size):
     # Fallthrough isnt even possible to be needed on the PicoCalc, neither is TB, but its a universal function
     return f"{size:.2f} PB"
 
-
 def run(filename):
     """
     Simple run utility.
@@ -40,11 +42,19 @@ def run(filename):
     try:
         exec(open(filename).read())
     except OSError:
-        print(f"Failed to open file: {filename}")
+        print_color(f"Failed to open file: {filename}", colors.ERROR)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred: {e}", colors.ERROR)
     return
 
+def is_directory_present(path):
+    # List the root directory to check for the existence of the desired path
+    try:
+        directories = os.listdir('/')
+        return path.lstrip('/') in directories
+    except OSError:
+        return False
+    
 def files(directory="/"):
     """
     Basic ls port.
@@ -56,7 +66,7 @@ def files(directory="/"):
         # List entries in the specified directory
         entries = uos.listdir(directory)
     except OSError as e:
-        print(f"Error accessing directory {directory}: {e}")
+        print_color(f"Error accessing directory {directory}: {e}", colors.ERROR)
         return
 
     print(f"\nContents of directory: {directory}\n")
@@ -74,7 +84,7 @@ def files(directory="/"):
                 readable_size = human_readable_size(size)
                 print(f"{entry:<25} {readable_size:<9}")
         except OSError as e:
-            print(f"Error accessing {entry}: {e}")
+            print_color(f"Error accessing {entry}: {e}", colors.ERROR)
     return
 
 def memory():
@@ -93,24 +103,39 @@ def memory():
     print(f"Free RAM: {human_readable_free}")
 
 def disk():
-    fs_stat = os.statvfs('/')
+    filesystem_paths = ['/', '/sd']
+    for path in filesystem_paths:
+        if is_directory_present(path) or path == '/':
+            if path == '/sd':
+                # Indicate SD card status
+                print_color("SD card mounted.", colors.SUCCESS)
+                print_color("Indexing SD Card, Please Wait.", colors.WARNING)
+            try:
+                fs_stat = os.statvfs(path)
+                block_size = fs_stat[1]
+                total_blocks = fs_stat[2]
+                free_blocks = fs_stat[3]
+                total_size = total_blocks * block_size
+                free_size = free_blocks * block_size
+                human_readable_total = human_readable_size(total_size)
+                human_readable_free = human_readable_size(free_size)
 
-    # Calculate total and free space
-    total_blocks = fs_stat[0]  # Total number of blocks
-    free_blocks = fs_stat[3]   # Number of free blocks
-    block_size = fs_stat[1]    # Block size in bytes
+                if path == '/':
+                    print(f"Total filesystem size: {human_readable_total}")
+                    print(f"Free filesystem space: {human_readable_free}")
+                else:
+                    print(f"Total SD size: {human_readable_total}")
+                    print(f"Free SD space: {human_readable_free}")
 
-    # Calculate total and free size in bytes
-    total_size = total_blocks * block_size
-    free_size = free_blocks * block_size
+            except OSError:
+                print_color(f"Unexpected error accessing filesystem at '{path}'.", colors.ERROR)
 
-    # Convert to kilobytes for easier reading
-    human_readable_total = human_readable_size(total_size)
-    human_readable_free = human_readable_size(free_size)
+        else:
+            if path == '/sd':
+                print_color("No SD Card Mounted.", colors.ERROR)
 
-    # Print the total and free space
-    print(f"Total filesystem size: {human_readable_total}")
-    print(f"Free filesystem space: {human_readable_free}")
+        # Reset color to default after checking each path
+        globals.fb.fgcolor = colors.fgdefault
     
 def initsd():
     """
@@ -120,6 +145,7 @@ def initsd():
     Inputs: None
     Outputs: None (Mounts SD card if it is present)
     """
+    sd = None
     try:
         sd = sdcard.SDCard(
             machine.SPI(0,
@@ -132,7 +158,7 @@ def initsd():
         # Mount filesystem
         uos.mount(sd, "/sd")
     except Exception as e:
-        print("Failed to mount SD card:", e)
+        print_color(f"Failed to mount SD card: {e}", colors.ERROR)
     return sd
 
 def killsd(sd="/sd"):
@@ -146,5 +172,11 @@ def killsd(sd="/sd"):
     try:
         uos.umount(sd)
     except Exception as e: 
-        print("Failed to unmount SD card:", e)
+        print_color(f"Failed to unmount SD card: {e}", colors.ERROR)
+    return
+
+def print_color(message, color):
+    globals.fb.fgcolor = color
+    print(message)
+    globals.fb.fgcolor = colors.fgdefault
     return
