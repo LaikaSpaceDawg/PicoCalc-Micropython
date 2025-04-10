@@ -17,6 +17,21 @@ import gc
 import globals
 from globals import colors
 
+def is_directory_present(path):
+    """
+    Helper function to shittily replace os.path.exists (not in micropython)
+    Absolutely not a good replacement, but decent enough for seeing if the SD is mounted
+    
+    Inputs: path to check for
+    Outputs: boolean if path is found
+    """
+    # List the root directory to check for the existence of the desired path
+    try:
+        directories = os.listdir('/')
+        return path.lstrip('/') in directories
+    except OSError:
+        return False
+    
 def human_readable_size(size):
     """
     Returns input size in bytes in a human-readable format
@@ -46,14 +61,6 @@ def run(filename):
     except Exception as e:
         print(f"An error occurred: {e}", colors.ERROR)
     return
-
-def is_directory_present(path):
-    # List the root directory to check for the existence of the desired path
-    try:
-        directories = os.listdir('/')
-        return path.lstrip('/') in directories
-    except OSError:
-        return False
     
 def files(directory="/"):
     """
@@ -88,6 +95,12 @@ def files(directory="/"):
     return
 
 def memory():
+    """
+    Prints available and free RAM
+    
+    Inputs: None
+    Outputs: None, prints RAM status
+    """
     gc.collect()
     # Get the available and free RAM
     free_memory = gc.mem_free()
@@ -103,6 +116,12 @@ def memory():
     print(f"Free RAM: {human_readable_free}")
 
 def disk():
+    """
+    Prints available flash and SD card space (if mounted) as well as totals
+    
+    Input: None
+    Outputs: None, prints disk statuses
+    """
     filesystem_paths = ['/', '/sd']
     for path in filesystem_paths:
         if is_directory_present(path) or path == '/':
@@ -176,6 +195,14 @@ def killsd(sd="/sd"):
     return
 
 def print_color(message, color):
+    """
+    Prints line in color then resets to console default
+    
+    Inputs:
+        Message: The string to print
+        Color: Supported color
+    Outputs: None, prints string
+    """
     globals.fb.fgcolor = color
     print(message)
     globals.fb.fgcolor = colors.fgdefault

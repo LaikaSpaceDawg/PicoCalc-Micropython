@@ -17,7 +17,7 @@ class Colors:
     BRCYAN = 14
     BRWHITE = 15
     
-    ERROR = RED
+    ERROR = BRRED
     SUCCESS = GREEN
     WARNING = BRYELLOW
     
