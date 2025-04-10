@@ -119,3 +119,21 @@ class FBConsole(uio.IOBase):
         
     def _draw_cursor(self, color):
         self.fb.hline(self.x * self.cwidth, (self.y+1) * self.lineheight -1, self.cwidth, color)
+
+    def text(self, c, x1, y1, color):
+        self.fb.text(c, x1, y1, color)
+
+    def line(self, x1, y1, x2, y2, color):
+        self.fb.line(x1, y1, x2, y2, color)
+        
+    def rect(self, x1, y1, x2, y2, color):
+        self.fb.rect(x1, y1, x2, y2, color)
+        
+    def fill_rect(self, x1, y1, x2, y2, color):
+        self.fb.fill_rect(x1, y1, x2, y2, color)
+
+    def fill(self, color):
+        self.fb.fill(color)
+
+    def pixel(self, x1, y1, color):
+        self.fb.pixel(x1, y1, color)

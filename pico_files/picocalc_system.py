@@ -46,6 +46,15 @@ def human_readable_size(size):
     # Fallthrough isnt even possible to be needed on the PicoCalc, neither is TB, but its a universal function
     return f"{size:.2f} PB"
 
+def clear():
+    """
+    cls
+    
+    Input: None
+    Output: None, clears screen
+    """
+    globals.fb.cls()
+    
 def run(filename):
     """
     Simple run utility.

@@ -10,6 +10,7 @@ from picocalc_system import run as run
 from picocalc_system import files as files
 from picocalc_system import memory as memory
 from picocalc_system import disk as disk
+from picocalc_system import clear as clear
 
 from picocalc_system import initsd as initsd
 from picocalc_system import killsd as killsd
