@@ -10,9 +10,12 @@ Features various system functions such as mounting and unmounting the PicoCalc's
 """
 import os
 import uos
+import time
 import machine
 import sdcard
 import gc
+
+import uasyncio as asyncio
 
 import globals
 from globals import colors
@@ -222,3 +225,43 @@ def print_color(message, color):
     print(message)
     globals.fb.fgcolor = colors.fgdefault
     return
+
+async def pwm(pin, frequency, duration):
+    """
+    Generate PWM of specific frequency for duration using pin
+    
+    Inputs:
+        Pin: PWM capable pin to be used
+        Frequency: Tone frequency
+        Duration: Tone duration
+    Outputs:
+        PWM on capable pin
+        (Noise on speakers)
+    
+    Note:
+        GPIO26 = left speaker
+        GPIO27 = right speaker
+    """
+    pwm = machine.PWM(pin)
+    pwm.freq(frequency)         
+    pwm.duty_u16(32768)         # (value between 0 and 65535)
+    await asyncio.sleep(duration)        
+    pwm.deinit()
+    
+# Could potentially be used to play different tones through each speaker concurrently
+async def gather_dual_pwm(task1, task2):
+    await asyncio.gather(task1, task2)
+async def dual_pwm(task1, task2):
+    asyncio.run(gather_dual_pwm(task1, task2))
+    
+def play_tone(pin, frequency, duration):
+    asyncio.run(pwm(pin, frequency, duration))
+    
+async def play_tones(pin_numbers, frequencies, durations):
+    # Check if all lists have the same length
+    if not (len(pin_numbers) == len(frequencies) == len(durations)):
+        raise ValueError("All input lists must have the same length")
+    
+    # Iterate through each pin, frequency, and duration
+    for pin, freq, dur in zip(pin_numbers, frequencies, durations):
+        await pwm(pin, freq, dur)
