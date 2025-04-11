@@ -10,7 +10,6 @@ Features various system functions such as mounting and unmounting the PicoCalc's
 """
 import os
 import uos
-import time
 import machine
 import sdcard
 import gc
@@ -247,17 +246,8 @@ async def pwm(pin, frequency, duration):
     pwm.duty_u16(32768)         # (value between 0 and 65535)
     await asyncio.sleep(duration)        
     pwm.deinit()
-    
-# Could potentially be used to play different tones through each speaker concurrently
-async def gather_dual_pwm(task1, task2):
-    await asyncio.gather(task1, task2)
-async def dual_pwm(task1, task2):
-    asyncio.run(gather_dual_pwm(task1, task2))
-    
-def play_tone(pin, frequency, duration):
-    asyncio.run(pwm(pin, frequency, duration))
-    
-async def play_tones(pin_numbers, frequencies, durations):
+
+async def pwm_sequence(pin_numbers, frequencies, durations):
     # Check if all lists have the same length
     if not (len(pin_numbers) == len(frequencies) == len(durations)):
         raise ValueError("All input lists must have the same length")
@@ -265,3 +255,17 @@ async def play_tones(pin_numbers, frequencies, durations):
     # Iterate through each pin, frequency, and duration
     for pin, freq, dur in zip(pin_numbers, frequencies, durations):
         await pwm(pin, freq, dur)
+        
+# Could potentially be used to play different tones through each speaker concurrently
+async def gather_dual_pwm(task1, task2):
+    await asyncio.gather(task1, task2)
+# dual_pwm, play_tone, and play_tones should literally never be run in event loops as nested event loops would be bad
+# specifically asyncio.run should be never used in event loops, instead use the non wrapper functions and await pwm or pwm_sequence directly
+async def dual_pwm(task1, task2):
+    asyncio.run(gather_dual_pwm(task1, task2))
+    
+def play_tone(pin, frequency, duration):
+    asyncio.run(pwm(pin, frequency, duration))
+    
+def play_tones(pins, frequencies, durations):
+    asyncio.run(pwm_sequence(pins, frequencies, durations))
