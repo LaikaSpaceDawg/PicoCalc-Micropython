@@ -241,7 +241,8 @@ async def pwm(pin, frequency, duration):
         GPIO26 = left speaker
         GPIO27 = right speaker
     """
-    pwm = machine.PWM(pin)
+    pwm_pin = machine.Pin(pin)
+    pwm = machine.PWM(pwm_pin)
     pwm.freq(frequency)         
     pwm.duty_u16(32768)         # (value between 0 and 65535)
     await asyncio.sleep(duration)        
