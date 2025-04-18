@@ -5,6 +5,9 @@ from machine import Pin, I2C
 from collections import deque
 import time
 
+from picocalc_system import run as run
+from picocalc_system import files as files
+
 _REG_VER = const(0x01) # fw version
 _REG_CFG = const(0x02) # config
 _REG_INT = const(0x03) # interrupt status
@@ -50,11 +53,7 @@ class PicoDisplay(framebuf.FrameBuffer):
         picocalcdisplay.init(self.buffer,color_type,True)
 
         
-    def stopRefresh(self):
-        picocalcdisplay.stopAutoUpdate()
-    
-    def recoverRefresh(self):
-        picocalcdisplay.startAutoUpdate()
+
     
     def text(self,c, x0, y0, color):
         picocalcdisplay.drawTxt6x8(c,x0,y0,color)
@@ -69,7 +68,7 @@ class PicoDisplay(framebuf.FrameBuffer):
 
 class PicoKeyboard:
     def __init__(self,sclPin=7,sdaPin=6,address=0x1f):
-        self.hardwarekeyBuf = deque((),30)
+        self.hardwarekeyBuf = deque(list(),30)
         self.i2c = I2C(1,scl=Pin(sclPin),sda=Pin(sdaPin),freq=10000)
         #self.i2c.scan()
         self.ignor = True
@@ -156,7 +155,7 @@ class PicoKeyboard:
         return self.read_reg16(_REG_BAT)
     
     def readinto(self, buf):
-        
+
         numkeysInhardware = self.keyCount()#how many keys in hardware
         if numkeysInhardware != 0:
             for i in range(numkeysInhardware):
@@ -170,61 +169,38 @@ class PicoKeyboard:
                     elif key == 0xa5:
                         self.isCtrl = True
                     elif key == 0xa1:
-                        self.isAlt = True              
+                        self.isAlt = True
+                        
+                    elif key == 0x81:
+                        files()
+                        print("Enter a Filename to Run:")
+                        run(input(""))
+                        print("Press Enter to Continue.")
+                        
                     else:
-                        #check current shift/ctrl/alt state
-                        modifier=b''
-                        if self.isShift and self.isAlt and (not self.isCtrl):
-                            modifier=b';4'
-                        elif self.isShift and self.isCtrl and (not self.isAlt):
-                            modifier=b';6'
-                        elif self.isAlt and self.isCtrl and (not self.isShift):
-                            modifier=b';7'    
-                        elif self.isShift and self.isCtrl and self.isAlt:
-                            modifier=b';8'    
-                        elif self.isAlt and (not self.isCtrl) and (not self.isShift):
-                            modifier=b';3'    
-                        elif (not self.isAlt) and self.isCtrl and (not self.isShift):
-                            modifier=b';5'  
-                        elif (not self.isAlt) and (not self.isCtrl) and self.isShift:
-                            modifier=b';2'  
-
                         if key >=0xB4 and key <= 0xB7:
                         #direction keys
-                            #self.hardwarekeyBuf.append(0x1b)
-                            #self.hardwarekeyBuf.append(ord('['))
-                            if modifier != b'':
-                                parameters = b'1'
-                            else:
-                                parameters = b''
+                            self.hardwarekeyBuf.append(0x1b)
+                            self.hardwarekeyBuf.append(ord('['))
                             if key == 0xB4:
-                                self.hardwarekeyBuf.extend(b'\x1b['+parameters+modifier+b'D')
+                                self.hardwarekeyBuf.append(ord('D'))
                             elif key == 0xB5:
-                                self.hardwarekeyBuf.extend(b'\x1b['+parameters+modifier+b'A')
+                                self.hardwarekeyBuf.append(ord('A'))
                             elif key == 0xB6:
-                                self.hardwarekeyBuf.extend(b'\x1b['+parameters+modifier+b'B')
+                                self.hardwarekeyBuf.append(ord('B'))
                             elif key == 0xB7:
-                                self.hardwarekeyBuf.extend(b'\x1b['+parameters+modifier+b'C')
+                                self.hardwarekeyBuf.append(ord('C'))
                         elif key == 0x0A:
                             self.hardwarekeyBuf.append(ord('\r'))
                             self.hardwarekeyBuf.append(ord('\n')) #return key
                         elif key == 0xB1:  # KEY_ESC
-                            self.hardwarekeyBuf.extend(b'\x1b\x1b')
-                        elif key == 0xD2: #KEY_HOME
-                            self.hardwarekeyBuf.extend(b'\x1b[H')
-                        elif key == 0xD5: #end
-                            self.hardwarekeyBuf.extend(b'\x1b[F')
+                            self.hardwarekeyBuf.append(0x1b)
                         elif key == 0x08 or key == 0xD4: #backspace and del
-                            if modifier != b'':
-                                parameters = b'3'
-                                self.hardwarekeyBuf.extend(b'\x1b['+parameters+modifier+b'~')
-                            else:
-                                self.hardwarekeyBuf.append(0x7F)
+                            self.hardwarekeyBuf.append(0x7F)
                         else:
                             if self.isAlt == True:
                                 if key !=ord(' ') and key!=ord(',') and key!=ord('.'):
-                                    self.hardwarekeyBuf.extend(b'\x1b')#to match the vt100 terminal style
-                                    self.hardwarekeyBuf.append(key)
+                                    self.hardwarekeyBuf.append(key|0x80)
                             elif self.isCtrl == True:   
                                 self.hardwarekeyBuf.append(key&0x1F)
                             else:
@@ -237,11 +213,6 @@ class PicoKeyboard:
                     elif key == 0xa1:
                         self.isAlt = False   
       
-                    
-                        
-                
-                
-                
                 #self.hardwarekeyBuf.append(key[:])
         #now deside how many keys to send to buf
         requestedkeys = len(buf)
@@ -269,8 +240,3 @@ class PicoKeyboard:
             return None
         else:
             return (requestedkeys-keysLeft)
-
-
-        
-        
-
