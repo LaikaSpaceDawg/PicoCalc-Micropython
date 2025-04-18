@@ -2,15 +2,25 @@ from picocalc import PicoDisplay, PicoKeyboard
 import os
 import vt
 import sys
-# Separated imports because Micropython is super finnicky
-from picocalc_system import initsd as initsd
-from picocalc_system import killsd as killsd
 from pye import pye_edit
 # Mount SD card to /sd on boot
+import picocalc_globals
+from picocalc_globals import colors
+
+from picocalc_system import run as run
+from picocalc_system import files as files
+from picocalc_system import memory as memory
+from picocalc_system import disk as disk
+from picocalc_system import clear as clear
+
+from picocalc_system import initsd as initsd
+from picocalc_system import killsd as killsd
 
 pc_display = PicoDisplay(320,320)#display
 pc_keyboard = PicoKeyboard()#keyboard
 sd = initsd()#sd card
+#picocalc_globals.fb=FBConsole(pd, bgcolor=colors.bgdefault, fgcolor=colors.fgdefault, width=320, height=320,readobj=kb,fontX=8,fontY=10)
+#os.dupterm(picocalc_globals.fb)
 pc_terminal = vt.vt(pc_display,pc_keyboard,sd=sd)#terminal
 
 _usb = sys.stdin
