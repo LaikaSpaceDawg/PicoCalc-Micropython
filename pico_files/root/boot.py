@@ -24,7 +24,7 @@ non_scrolling_lines = 2
 show_bar = True
 index = sys.version.find('MicroPython v')
 if index != -1:
-    MICROPYTHON_VERSION = sys.version[index + 13:].split()[0]
+    MICROPYTHON_VERSION = sys.version[index + 13:].split('-')[0]
 
 try:
     machine.freq(200000000)
