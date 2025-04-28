@@ -9,7 +9,6 @@ import sdcard
 import uos
 
 from colorer import Fore, Back, Style, print, autoreset
-
 sd = None
 keyboard, display = None, None
 terminal = None
@@ -70,8 +69,8 @@ class PicoDisplay(framebuf.FrameBuffer):
     def text(self,c, x0, y0, color):
         picocalcdisplay.drawTxt6x8(c,x0,y0,color)
 
-    def show(self):
-        picocalcdisplay.update()
+    def show(self,core=1):
+        picocalcdisplay.update(core)
 
 class PicoKeyboard:
     def __init__(self,sclPin=7,sdaPin=6,address=0x1f):
