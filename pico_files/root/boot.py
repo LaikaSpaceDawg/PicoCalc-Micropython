@@ -46,8 +46,8 @@ try:
     pc_sd = PicoSD()
     pc_sd.mount()
     # Activate both speakers on boot.
-    pc_speaker_L = PicoSpeaker(26)
-    pc_speaker_R = PicoSpeaker(27)
+    pcs_L = PicoSpeaker(26)
+    pcs_R = PicoSpeaker(27)
     pc_terminal = vt.vt(pc_display, pc_keyboard, sd=pc_sd())
     
     _usb = sys.stdout  # 
