@@ -39,6 +39,7 @@ try:
     if show_bar:
         initialize_terminal()
     pc_rtc = PicoRTC()
+    pc_wifi = PicoWiFi()
     pc_rtc.sync()
     pc_display = PicoDisplay(320, 320)
     pc_keyboard = PicoKeyboard()
@@ -112,8 +113,7 @@ try:
         
     pc_sd.check_mount()
     print(f"{Fore.GREEN}Current Time and Date: {pc_rtc.time()}")
-    pc_wifi = PicoWiFi()
-    pc_wifi.aconnect(True)
+    #pc_wifi.aconnect(True)
     #usb_debug("boot.py done.")
 
 except Exception as e:
