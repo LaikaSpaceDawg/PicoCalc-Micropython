@@ -11,6 +11,7 @@ import uos, os
 import network, socket
 
 from colorer import Fore, Back, Style, print, autoreset
+
 sd = None
 keyboard, display = None, None
 terminal = None
@@ -492,11 +493,11 @@ class PicoWiFi:
         start_time = time.time()
         while not self.wlan.isconnected():
             if time.time() - start_time > timeout:
-                raise RuntimeError("WiFi connection timed out")
+                raise RuntimeError(f"{Fore.RED}WiFi Connection Timed Out")
             time.sleep(0.1)
 
-        print(f"Connected to {ssid}")
-        print(f"Current IP: {self.wlan.ifconfig()[0]}")
+        print(f"{Fore.GREEN}Connected to {ssid}")
+        print(f"{Fore.GREEN}Current IP: {self.wlan.ifconfig()[0]}")
 
     def aconnect(self, include_hidden=False):
         config = self._load_config()
