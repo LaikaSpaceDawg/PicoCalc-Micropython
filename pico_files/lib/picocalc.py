@@ -6,7 +6,9 @@ from machine import Pin, I2C, PWM, SPI
 from collections import deque
 import time
 import sdcard
-import uos
+import uos, os
+
+import network, socket
 
 from colorer import Fore, Back, Style, print, autoreset
 sd = None
@@ -464,3 +466,118 @@ class PicoSpeaker:
 
         for freqc, msec in tune:
             self._play_frequency(freqc, msec * 0.001)
+            
+class PicoWiFi:
+    CONFIG_FILE = '/wifi_conf.txt'
+
+    def __init__(self):
+        self.wlan = network.WLAN(network.STA_IF)
+        self.wlan.active(True)
+
+    def connect(self, ssid=None, password=None):
+        if ssid and password is None:
+            config = self._load_config()
+            password = dict(config).get(ssid)  # Convert list to dict temporarily to find password
+
+        if not ssid:
+            raise ValueError("SSID must be specified.")
+
+        if password:
+            self.wlan.connect(ssid.encode('utf-8'), password.encode('utf-8'))
+        else:
+            self.wlan.connect(ssid.encode('utf-8'))
+
+        # Wait for connection
+        timeout = 10  # 10 seconds timeout
+        start_time = time.time()
+        while not self.wlan.isconnected():
+            if time.time() - start_time > timeout:
+                raise RuntimeError("WiFi connection timed out")
+            time.sleep(0.1)
+
+        print(f"Connected to {ssid}")
+        print(f"Current IP: {self.wlan.ifconfig()[0]}")
+
+    def aconnect(self, include_hidden=False):
+        config = self._load_config()
+        ssids = self.scan()
+
+        # Try to connect to hidden SSIDs if specified
+        if include_hidden:
+            for ssid, password in config:
+                if ssid not in ssids:
+                    try:
+                        self.connect(ssid=ssid, password=password)
+                        return
+                    except RuntimeError as e:
+                        pass
+
+        # Attempt to connect to visible networks
+        for ssid in ssids:
+            for stored_ssid, password in config:
+                if ssid == stored_ssid:
+                    self.connect(ssid=ssid, password=password)
+                    return
+
+        print("No known networks or hidden networks successfully connected.")
+
+    def _load_config(self):
+        try:
+            config = []
+            with open(self.CONFIG_FILE, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        ssid, password = self._parse_line(line)
+                        config.append((ssid, password))
+            return config
+        except Exception as e:
+            print(f"Error loading config: {e}")
+            return []
+
+    def _parse_line(self, line):
+        if '"' in line:
+            parts = line.split('","')
+            if len(parts) == 2:
+                ssid = parts[0].strip('"')
+                password = parts[1].strip('"')
+                return ssid, password
+            elif len(parts) == 1:
+                ssid = parts[0].strip('"')
+                return ssid, None
+        return None, None
+
+    def save_config(self, ssid, password):
+        new_entry = f'"{ssid}","{password}"\n'
+        with open(self.CONFIG_FILE, 'a') as f:
+            f.write(new_entry)
+        print(f"Saved configuration for {ssid}")
+
+    def disconnect(self):
+        self.wlan.disconnect()
+        print("Disconnected from WiFi")
+
+    def is_connected(self):
+        return self.wlan.isconnected()
+
+    def scan(self):
+        self.wlan.active(True)
+        networks = self.wlan.scan()
+        ssids = [network[0].decode('utf-8') for network in networks]
+        return ssids
+
+    def ping(self, host='1.1.1.1', port=80, timeout=5):
+        try:
+            socket_instance = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            socket_instance.settimeout(timeout)
+            start_time = time.ticks_ms()
+            socket_instance.connect((host, port))
+            end_time = time.ticks_ms()
+            rtt = time.ticks_diff(end_time, start_time)
+            print(f"Ping to {host} on port {port} successful, RTT = {rtt} ms")
+            socket_instance.close()
+            return rtt
+        except (socket.timeout, OSError) as e:
+            print(f"Ping failed: {e}")
+            socket_instance.close()
+            return None
