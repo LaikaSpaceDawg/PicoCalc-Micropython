@@ -1,5 +1,5 @@
 // Board and hardware specific configuration
-#define MICROPY_HW_BOARD_NAME                   "Pimoroni Pico Plus 2 (PSRAM + LTE + WiFi)"
+#define MICROPY_HW_BOARD_NAME                   "\nPimoroni Pico Plus 2 (PSRAM + WiFi)"
 #define MICROPY_HW_FLASH_STORAGE_BYTES          (PICO_FLASH_SIZE_BYTES - (2 * 1024 * 1024))
 
 // Enable networking.
