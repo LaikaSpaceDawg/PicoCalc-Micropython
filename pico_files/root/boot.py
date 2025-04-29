@@ -3,7 +3,7 @@ import machine
 import os
 
 import picocalc
-from picocalc import PicoDisplay, PicoKeyboard, PicoSD, PicoSpeaker
+from picocalc import PicoDisplay, PicoKeyboard, PicoSD, PicoSpeaker, PicoWiFi
 import vt
 from battery import Bar
 from clock import PicoRTC
@@ -42,14 +42,14 @@ try:
     pc_rtc.sync()
     pc_display = PicoDisplay(320, 320)
     pc_keyboard = PicoKeyboard()
+    pcs_L = PicoSpeaker(26)
+    pcs_R = PicoSpeaker(27)
     # Mount SD card to /sd on boot
     pc_sd = PicoSD()
     pc_sd.mount()
     # Activate both speakers on boot.
-    pcs_L = PicoSpeaker(26)
-    pcs_R = PicoSpeaker(27)
     pc_terminal = vt.vt(pc_display, pc_keyboard, sd=pc_sd())
-    
+
     _usb = sys.stdout  # 
 
     def usb_debug(msg):
@@ -112,6 +112,8 @@ try:
         
     pc_sd.check_mount()
     print(f"{Fore.GREEN}Current Time and Date: {pc_rtc.time()}")
+    pc_wifi = PicoWiFi()
+    pc_wifi.aconnect(True)
     #usb_debug("boot.py done.")
 
 except Exception as e:
