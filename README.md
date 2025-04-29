@@ -1,6 +1,6 @@
 # MicroPython Drivers for PicoCalc 
 <p align="center">
-  <img src="./imgs/framebuffer.jpg" alt="REPL" width="320"/>
+  <img src="./_imgs/framebuffer.jpg" alt="REPL" width="320"/>
 </p>
 
 ## :bangbang: Updates
@@ -11,7 +11,7 @@ It is available for import in both versions, however if a lite version is wanted
     Thank [@zerodante](https://github.com/zenodante) for his work on it!
 
 <p align="center">
-  <img src="./imgs/eigenmath.jpg" alt="Eigenmath Example" width="320"/>
+  <img src="./_imgs/eigenmath.jpg" alt="Eigenmath Example" width="320"/>
 </p>
 
 - Install instructions simplified!
@@ -129,7 +129,7 @@ em.reset() #reset the internal sources
 del builtins.em #del the eigenmath from root
 gc.collect()
 ```
-![editor](./imgs/framebuffer2.jpg)
+![editor](./_imgs/framebuffer2.jpg)
 
 Editor is based on [robert-hh/Micropython-Editor](https://github.com/robert-hh/Micropython-Editor)  
 Now with keyword highlighting support.
