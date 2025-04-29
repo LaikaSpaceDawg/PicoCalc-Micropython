@@ -4,7 +4,7 @@
 </p>
 
 ## :bangbang: Updates
-
+- Multithreading Example Present in branch `multithreading`, not updated to latest yet, but provides an example implementation.
 - Eigenmath is now included, bringing some actual calculator functionality back to the PicoCalc.
 It is available for import in both versions, however if a lite version is wanted (would save about 250kb) I could compile them.
 
@@ -129,7 +129,9 @@ em.reset() #reset the internal sources
 del builtins.em #del the eigenmath from root
 gc.collect()
 ```
-![editor](./_imgs/framebuffer2.jpg)
+<p align="center">
+  <img src="./_imgs/framebuffer2.jpg" alt="REPL" width="320"/>
+</p>
 
 Editor is based on [robert-hh/Micropython-Editor](https://github.com/robert-hh/Micropython-Editor)  
 Now with keyword highlighting support.
