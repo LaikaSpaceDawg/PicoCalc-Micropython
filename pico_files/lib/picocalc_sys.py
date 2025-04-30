@@ -250,7 +250,6 @@ def screenshot_bmp(buffer, filename, width=320, height=320, palette=None):
 
 def read_config(file_path):
     try:
-<<<<<<< HEAD:pico_files/lib/picocalc_sys.py
         with open(file_path, 'r') as file:
             line = file.readline().strip()
             # Remove the quotes and split by commas
@@ -259,31 +258,12 @@ def read_config(file_path):
                 return config
             else:
                 raise ValueError("Invalid config file format.")
-=======
         exec(open(filename).read(), globals())
     except OSError:
         print(f"Failed to open file: {filename}")
     except Exception as e:
         print(f"An error occurred: {e}")
     return
-
-def files(directory="/"):
-    """
-    Basic ls port.
-    
-    Inputs: directory/filepath to list files and directories in
-    Outputs: Print of all files and directories contained, along with size
-    """
-    try:
-        # List entries in the specified directory
-        entries = uos.listdir(directory)
->>>>>>> upstream/main:pico_files/modules/picocalc_system.py
-    except OSError as e:
-        print('Failed to read config file:', e)
-        return None
-    except Exception as e:
-        print('Error:', e)
-        return None
 
 # Upload function using WebDAV
 def www_upload(file_name_to_upload):
@@ -303,7 +283,6 @@ def www_upload(file_name_to_upload):
                                  headers=headers,
                                  data=file_content,
                                  auth=(username, password))
-        
         print('Upload response:', response.status_code, response.content)
         response.close()
     except OSError as e:
