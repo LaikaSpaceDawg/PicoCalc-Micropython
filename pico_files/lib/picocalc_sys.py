@@ -19,6 +19,8 @@ import errno
 import uasyncio as asyncio
 from micropython import const
 
+import urequests
+
 import picocalc
 from colorer import Fore, Back, Style, print, autoreset
 autoreset(True)
@@ -248,7 +250,50 @@ def screenshot_bmp(buffer, filename, width=320, height=320, palette=None):
             row_data = buffer[start:start + ((width + 1) // 2)]
             f.write(row_data)
             f.write(bytes(row_bytes - len(row_data)))  # Padding
-            
+
+def read_config(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            line = file.readline().strip()
+            # Remove the quotes and split by commas
+            config = [item.strip('"') for item in line.split(',')]
+            if len(config) == 3:
+                return config
+            else:
+                raise ValueError("Invalid config file format.")
+    except OSError as e:
+        print('Failed to read config file:', e)
+        return None
+    except Exception as e:
+        print('Error:', e)
+        return None
+
+# Upload function using WebDAV
+def www_upload(file_name_to_upload):
+    config = read_config("/www_conf.txt")
+    if not config:
+        print("Could not read config. Exiting.")
+        return
+
+    webdav_url, username, password = config
+
+    try:
+        with open(file_name_to_upload, 'rb') as file:
+            file_content = file.read()
+
+        headers = {'Content-Type': 'application/octet-stream'}
+        response = urequests.put(webdav_url + '/' + file_name_to_upload,
+                                 headers=headers,
+                                 data=file_content,
+                                 auth=(username, password))
+        
+        print('Upload response:', response.status_code, response.content)
+        response.close()
+    except OSError as e:
+        print('Failed to read file:', e)
+    except Exception as e:
+        print('Error:', e)
+        
 def scan():
     i2c = machine.I2C(1, sda=machine.Pin(6), scl=machine.Pin(7), freq=10000)
     print('Scan I2C bus...')
