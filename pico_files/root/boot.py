@@ -8,8 +8,6 @@ import picocalcdisplay
 import vt
 from battery import Bar
 from clock import PicoRTC
-# Separated imports because Micropython is super finnicky
-from picocalc_sys import clear, run, files, memory, disk
 
 from eigenmath import EigenMath as em
 from pye import pye_edit
@@ -39,8 +37,9 @@ def initialize_terminal():
 try:
     if show_bar:
         initialize_terminal()
+        
+    pc_display = PicoDisplay(320, 320)
     
-
     machine.lightsleep(50)
     displayflush=True
     def upd(timer=None):
@@ -73,7 +72,6 @@ try:
 
     _thread.start_new_thread(thread1, ())
     
-    pc_display = PicoDisplay(320, 320)
     pc_keyboard = PicoKeyboard()
     pcs_L = PicoSpeaker(26)
     pcs_R = PicoSpeaker(27)
@@ -151,6 +149,10 @@ try:
     print(f"{Fore.GREEN}Current Time and Date: {pc_rtc.time()}")
     pc_wifi = PicoWiFi()
     #pc_wifi.aconnect(True)
+    try:
+        from picocalc_sys import clear, files, memory, disk, run
+    except Exception as e:
+        print(f"Failed to import sys: {e}")
     #usb_debug("boot.py done.")
 
 except Exception as e:

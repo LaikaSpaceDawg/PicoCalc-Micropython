@@ -21,7 +21,6 @@ from micropython import const
 
 import urequests
 
-
 def human_readable_size(size):
     """
     Returns input size in bytes in a human-readable format
@@ -69,7 +68,7 @@ def run(filename):
     Outputs: None, runs file
     """
     try:
-        exec(open(filename).read())
+        exec(open(filename).read(), globals())
     except OSError:
         print(f"Failed to open file: {filename}")
     except Exception as e:
