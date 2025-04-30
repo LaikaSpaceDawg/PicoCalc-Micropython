@@ -4,6 +4,7 @@ import os
 
 import picocalc
 from picocalc import PicoDisplay, PicoKeyboard, PicoSD, PicoSpeaker, PicoWiFi
+import picocalcdisplay
 import vt
 from battery import Bar
 from clock import PicoRTC
@@ -38,9 +39,40 @@ def initialize_terminal():
 try:
     if show_bar:
         initialize_terminal()
-    pc_rtc = PicoRTC()
-    pc_wifi = PicoWiFi()
-    pc_rtc.sync()
+    
+
+    machine.lightsleep(50)
+    displayflush=True
+    def upd(timer=None):
+        global displayflush
+        displayflush=True
+
+    import _thread
+    threadlock = _thread.allocate_lock()
+    import asyncio
+    asynclock = asyncio.Lock()
+
+    async def flushthread():
+        global displayflush
+        while True:
+            if displayflush:
+                displayflush=False
+                async with asynclock:
+                    with threadlock:
+                        picocalcdisplay.update(0)
+            await asyncio.sleep_ms(5)
+
+    async def core1():
+        asyncio.create_task(flushthread())
+        #asyncio.create_task(powersaver())
+        while True:
+            await asyncio.sleep(1)
+
+    def thread1():
+        asyncio.run(core1())
+
+    _thread.start_new_thread(thread1, ())
+    
     pc_display = PicoDisplay(320, 320)
     pc_keyboard = PicoKeyboard()
     pcs_L = PicoSpeaker(26)
@@ -48,11 +80,10 @@ try:
     # Mount SD card to /sd on boot
     pc_sd = PicoSD()
     pc_sd.mount()
-    # Activate both speakers on boot.
+    
     pc_terminal = vt.vt(pc_display, pc_keyboard, sd=pc_sd())
 
     _usb = sys.stdout  # 
-
     def usb_debug(msg):
         if isinstance(msg, str):
             _usb.write(msg)
@@ -75,9 +106,12 @@ try:
 
     os.dupterm(pc_terminal)
     print("\n")
+    tupd = machine.Timer()
+    tupd.init(mode=machine.Timer.PERIODIC,period=25, callback=upd)
     
     def print_header():
         if not picocalc.editing:
+            global MICROPYTHON_VERSION
             description = f"PicoCalc MicroPython (ver {MICROPYTHON_VERSION})"
             battery = picocalc.keyboard.battery()
             current_time = pc_rtc.time()
@@ -106,6 +140,8 @@ try:
     def update_header(timer=None):
         print_header()
     
+    pc_rtc = PicoRTC()
+    pc_rtc.sync()
     if show_bar:
         print_header()
         header_timer = machine.Timer()
@@ -113,6 +149,7 @@ try:
         
     pc_sd.check_mount()
     print(f"{Fore.GREEN}Current Time and Date: {pc_rtc.time()}")
+    pc_wifi = PicoWiFi()
     #pc_wifi.aconnect(True)
     #usb_debug("boot.py done.")
 

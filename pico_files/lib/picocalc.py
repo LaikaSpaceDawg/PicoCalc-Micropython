@@ -45,6 +45,7 @@ _StateRelease = const(3)
 
 class PicoDisplay(framebuf.FrameBuffer):
     def __init__(self, width, height,color_type = framebuf.GS4_HMSB):
+        self.manual_refresh = True
         self.width = width
         self.height = height
         if color_type == framebuf.GS4_HMSB:
@@ -60,19 +61,27 @@ class PicoDisplay(framebuf.FrameBuffer):
 
 
         super().__init__(self.buffer, self.width, self.height, color_type)
-        picocalcdisplay.init(self.buffer,color_type,True)
+        picocalcdisplay.init(self.buffer,color_type,not self.manual_refresh)
 
         
     def stopRefresh(self):
+        if self.manual_refresh:
+            return
         picocalcdisplay.stopAutoUpdate()
     
     def recoverRefresh(self):
+        if self.manual_refresh:
+            return
         picocalcdisplay.startAutoUpdate()
     
     def text(self,c, x0, y0, color):
+        if self.manual_refresh:
+            return
         picocalcdisplay.drawTxt6x8(c,x0,y0,color)
 
     def show(self,core=1):
+        if self.manual_refresh:
+            return
         picocalcdisplay.update(core)
 
 class PicoKeyboard:
