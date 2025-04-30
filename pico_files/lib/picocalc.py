@@ -94,11 +94,14 @@ class PicoKeyboard:
     def write_cmd(self,cmd):
         self.i2c.writeto(self.address,bytearray([cmd]))
 
-    def read_reg16(self,reg):
-        self.temp[0]=reg
-        self.i2c.writeto(self.address,self.temp[0:1])
-        self.i2c.readfrom_into(self.address,self.temp)
-        return self.temp
+    def read_reg16(self, reg):
+        while True:
+            self.temp[0] = reg
+            try:
+                self.i2c.readfrom_mem_into(self.address, reg, self.temp)
+                return self.temp
+            except:
+                pass
     
     def read_reg8(self,reg):
         self.i2c.writeto(self.address, bytes(reg)) 
