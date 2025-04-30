@@ -21,9 +21,6 @@ from micropython import const
 
 import urequests
 
-import picocalc
-from colorer import Fore, Back, Style, print, autoreset
-autoreset(True)
 
 def human_readable_size(size):
     """
@@ -253,6 +250,7 @@ def screenshot_bmp(buffer, filename, width=320, height=320, palette=None):
 
 def read_config(file_path):
     try:
+<<<<<<< HEAD:pico_files/lib/picocalc_sys.py
         with open(file_path, 'r') as file:
             line = file.readline().strip()
             # Remove the quotes and split by commas
@@ -261,6 +259,25 @@ def read_config(file_path):
                 return config
             else:
                 raise ValueError("Invalid config file format.")
+=======
+        exec(open(filename).read(), globals())
+    except OSError:
+        print(f"Failed to open file: {filename}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    return
+
+def files(directory="/"):
+    """
+    Basic ls port.
+    
+    Inputs: directory/filepath to list files and directories in
+    Outputs: Print of all files and directories contained, along with size
+    """
+    try:
+        # List entries in the specified directory
+        entries = uos.listdir(directory)
+>>>>>>> upstream/main:pico_files/modules/picocalc_system.py
     except OSError as e:
         print('Failed to read config file:', e)
         return None
