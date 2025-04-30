@@ -111,11 +111,27 @@ Enabled by LaikaSpaceDawg!
 Due to the WiFi chip connecting to the RP2040/2350 via SPI1, which is shared with LCD, it is necessary to stop the auto refresh function first via the function:
 pc_terminal.stopRefresh(), after wifi finish its work, use pc_terminal.recoverRefresh() to recover the LCD refreshing.
 
+### Internal code editor
 You can launch the built-in Python code editor by calling:
 ```python
 edit("abc.py")
 ```
-Using eigenmath
+![editor](./imgs/framebuffer2.jpg)
+Editor is based on [robert-hh/Micropython-Editor](https://github.com/robert-hh/Micropython-Editor)  
+Now with keyword highlighting support.
+### run examples
+Copy examples folder under pico_files to your pico module root. 
+Run it via command 
+```python
+run('/examples/rotation.py')
+```
+<p align="center">
+  <img src="./_imgs/picocalc_example.png" alt="Image by _burr_" width="320"/>
+</p>
+
+
+
+### Using eigenmath
 
 I initialize Eigenmath early during system startup because it requires a contiguous 300kB block from the MicroPython heap. If we delay this allocation until later stages of the boot process, heap fragmentation may prevent us from obtaining such a large continuous memory region. Therefore, we allocate it at the beginning. So there is a special boot.py in root_eigenmath folder. If you are using the picocalc_micropython_ulab_eigenmath_withfilesystem_pico2.uf2, it is already included.
 ```python
