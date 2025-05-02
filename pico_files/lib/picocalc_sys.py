@@ -56,8 +56,13 @@ def is_dir(path):
     except OSError:
         return False
 
-def clear():
-    print("\x1b[2J\x1b[3;1H", end='')
+def clear(lines=None):
+    if lines:
+        # +2 as a constant correction, might only need to be +1 when used in scripts
+        for line in range(lines+2):
+            print("\033[1A\033[2K",end='')
+    else:
+        print("\x1b[2J\x1b[3;1H", end='')
 
 def run(filename):
     """
