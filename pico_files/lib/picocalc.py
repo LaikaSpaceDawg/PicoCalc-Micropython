@@ -11,6 +11,7 @@ import uos, os
 import network, socket
 
 from colorer import Fore, Back, Style, print, autoreset
+autoreset(True)
 
 sd = None
 keyboard, display = None, None
