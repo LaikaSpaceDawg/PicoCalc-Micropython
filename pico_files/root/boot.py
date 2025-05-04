@@ -3,11 +3,10 @@ import machine
 import os
 
 import picocalc
-from picocalc import PicoDisplay, PicoKeyboard, PicoSD, PicoSpeaker, PicoWiFi
+from picocalc import PicoDisplay, PicoKeyboard, PicoSD, PicoSpeaker, PicoWiFi, PicoRTC
 import picocalcdisplay
 import vt
 from battery import Bar
-from clock import PicoRTC
 
 from eigenmath import EigenMath as em
 from pye import pye_edit
