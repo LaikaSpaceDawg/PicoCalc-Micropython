@@ -86,8 +86,8 @@ fb_s.buf_ptr = addressof(buf2)
 
 '''
 class PicoDisplay(framebuf.FrameBuffer):
-    def __init__(self, width, height,color_type = framebuf.GS4_HMSB):
-        self.manual_refresh = True
+    def __init__(self, width, height, refresh = False, color_type = framebuf.GS4_HMSB):
+        self.manual_refresh = refresh
         self.width = width
         self.height = height
         if color_type == framebuf.GS4_HMSB:

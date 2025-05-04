@@ -18,6 +18,8 @@ terminal_rows = 40
 terminal_width = 53
 non_scrolling_lines = 2
 
+multithreading = FalseMM
+
 # Show menu bar?
 show_bar = True
 index = sys.version.find('MicroPython v')
@@ -37,18 +39,19 @@ try:
     if show_bar:
         initialize_terminal()
         
-    pc_display = PicoDisplay(320, 320)
+    pc_display = PicoDisplay(320, 320, multithreading)
     
     machine.lightsleep(50)
     displayflush=True
     def upd(timer=None):
         global displayflush
         displayflush=True
-
-    import _thread
-    threadlock = _thread.allocate_lock()
-    import asyncio
-    asynclock = asyncio.Lock()
+    
+    if multithreading:
+        import _thread
+        threadlock = _thread.allocate_lock()
+        import asyncio
+        asynclock = asyncio.Lock()
 
     async def flushthread():
         global displayflush
@@ -68,8 +71,9 @@ try:
 
     def thread1():
         asyncio.run(core1())
-
-    _thread.start_new_thread(thread1, ())
+        
+    if multithreading:
+        _thread.start_new_thread(thread1, ())
     
     pc_keyboard = PicoKeyboard()
     pcs_L = PicoSpeaker(26)
@@ -103,8 +107,9 @@ try:
 
     os.dupterm(pc_terminal)
     print("\n")
-    tupd = machine.Timer()
-    tupd.init(mode=machine.Timer.PERIODIC,period=25, callback=upd)
+    if multithreading:
+        tupd = machine.Timer()
+        tupd.init(mode=machine.Timer.PERIODIC,period=25, callback=upd)
     
     def print_header():
         if not picocalc.editing:
