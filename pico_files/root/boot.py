@@ -18,7 +18,7 @@ terminal_rows = 40
 terminal_width = 53
 non_scrolling_lines = 2
 
-multithreading = FalseMM
+multithreading = True
 
 # Show menu bar?
 show_bar = True

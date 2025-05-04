@@ -103,8 +103,11 @@ class PicoDisplay(framebuf.FrameBuffer):
 
 
         super().__init__(buffer, self.width, self.height, color_type)
-        picocalcdisplay.init(buffer,color_type,True)
-
+        picocalcdisplay.init(buffer,color_type,not self.manual_refresh)
+        
+    def setManual(self, toggle):
+        self.manual_refresh = toggle
+        
     def restLUT(self):
         picocalcdisplay.resetLUT(0)
 
