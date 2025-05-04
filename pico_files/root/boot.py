@@ -8,7 +8,7 @@ import picocalcdisplay
 import vt
 from battery import Bar
 
-from eigenmath import EigenMath as em
+from eigenmath import EigenMath
 from pye import pye_edit
 
 from colorer import Fore, Back, Style, print, autoreset
