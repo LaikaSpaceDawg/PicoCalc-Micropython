@@ -42,6 +42,9 @@ cd PicoCalc-micropython
 git submodule update --init --recursive
 ```
 
+Prepare for build by copying all files from `PicoCalc-micropython/build_files` into `/micropython/ports/rp2/modules/`
+
+
 Then Build MicroPython as usual, while including user modules:
 ```sh
 cd ../micropython/ports/rp2
