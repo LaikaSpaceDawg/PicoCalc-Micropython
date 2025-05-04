@@ -41,7 +41,7 @@ try:
         initialize_terminal()
     
     if eigenmath_true:
-        em=eigenmath.EigenMath(300*1024)
+        em=EigenMath(300*1024)
     pc_display = PicoDisplay(320, 320, multithreading)
     
     machine.lightsleep(50)
