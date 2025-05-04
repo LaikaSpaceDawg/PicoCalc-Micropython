@@ -40,7 +40,7 @@ try:
     if show_bar:
         initialize_terminal()
     
-    if eigenmath_true:
+    if eigenmath_heap:
         em=EigenMath(300*1024)
     pc_display = PicoDisplay(320, 320, multithreading)
     
