@@ -132,9 +132,7 @@ run('/examples/rotation.py')
   <img src="./_imgs/picocalc_example.png" alt="Image by _burr_" width="320"/>
 </p>
 
-
-
-### Using eigenmath
+### ➕ ➖ ✖️ ➗ Eigenmath
 
 I initialize Eigenmath early during system startup because it requires a contiguous 300kB block from the MicroPython heap. If we delay this allocation until later stages of the boot process, heap fragmentation may prevent us from obtaining such a large continuous memory region. Therefore, we allocate it at the beginning. So there is a special boot.py in root_eigenmath folder. If you are using the picocalc_micropython_ulab_eigenmath_withfilesystem_pico2.uf2, it is already included.
 ```python
@@ -152,11 +150,74 @@ gc.collect()
   <img src="./_imgs/framebuffer2.jpg" alt="REPL" width="320"/>
 </p>
 
-Editor is based on [robert-hh/Micropython-Editor](https://github.com/robert-hh/Micropython-Editor)  
-Now with keyword highlighting support.
+### :computer: Display Functionality
 
-The REPL and editor both run inside a VT100 terminal emulator, based on  
-[ht-deko/vt100_stm32](https://github.com/ht-deko/vt100_stm32), with bug fixes and additional features.
+#### Accessing the Display
+
+The screen is exposed via `picocalc.display`, which is an instance of the `PicoDisplay` class (a subclass of `framebuf`). You can use **all** standard `framebuf` methods to draw on it.
+
+#### VT100 Emulator Mode
+
+- Runs in **4-bit color (16 colors)** mode to save limited RAM (≈50 KB).
+- Uses an **internal color lookup table (LUT)** to map logical VT100 colors to the actual RGB565 values sent to the panel.
+
+#### Color Lookup Table (LUT)
+
+- **Reset to the default VT100 palette**  
+  ```python
+  picocalc.display.resetLUT()
+  ```
+- **Switch to a predefined LUT**  
+  ```python
+  picocalc.display.switchPredefinedLUT("name")
+  ```  
+  Available presets: `"vt100"`, `"pico8"` (more coming soon).
+
+#### Inspecting and Modifying the LUT
+
+- **Get the current LUT**  
+  ```python
+  lut = picocalc.display.getLUT()
+  ```  
+  Returns a 256-entry, big-endian 16-bit array you can read from or write to directly.
+
+- **Note on color format**  
+  - The display expects **RGB565** values.  
+  - Because of SPI byte‐order, you must **swap high/low bytes** when writing back to the LUT.
+
+- **Set a custom LUT**  
+  ```python
+  picocalc.display.setLUT(custom_array)
+  ```  
+  Accepts up to 256 16-bit elements to override the existing table.
+
+> **Example usage:** see `examples/mandelbrot.py`.
+
+#### Core Usage & Refresh Modes
+
+By default:
+
+- **Core 0** runs the MicroPython VM.
+- **Core 1** continuously performs color conversion and refreshes the screen in the background.
+
+You can switch to **passive refresh mode**:
+Please refer the /examples/refresh.py for more details. 
+```python
+# stop auto refresh
+picocalc.display.stopRefresh()
+# recover auto refresh
+picocalc.display.recoverRefresh()
+# manually update the screen by core 0, default is done by core 1, so you could use all core 0 for other logic
+picocalc.display.show(0)
+# wait the manual refresh function release the vram. If you use the manual refuresh function
+picocalc.display.isScreenUpdateDone()
+```
+
+- In passive mode, the screen only updates when you explicitly call:
+  ```python
+  picocalc.display.show(core=1)
+  ```
+- The `show()` method takes a `core` argument (`0` or `1`) to choose which core handles color conversion and DMA ping‐pong buffer setup.
 
 ---
 
