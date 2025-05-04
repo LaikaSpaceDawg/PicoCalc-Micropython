@@ -17,7 +17,7 @@ autoreset(True)
 sd = None
 keyboard, display = None, None
 terminal = None
-edit = None
+editor = None
 editing = None
 usb_debug = None
 

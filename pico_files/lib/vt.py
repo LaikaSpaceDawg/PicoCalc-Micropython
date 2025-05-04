@@ -42,6 +42,9 @@ class vt(uio.IOBase):
         self.keyboard = keyboard
         self.screencaptureKey = screencaptureKey
     
+    def setsd(self, sd):
+        self.sd=sd
+        
     def screencapture(self):
         if self.sd:
             filename = "{}screen_{}.bmp".format(self.captureFolder, time.ticks_ms())
