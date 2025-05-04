@@ -19,6 +19,7 @@ terminal_width = 53
 non_scrolling_lines = 2
 
 multithreading = True
+eigenmath_heap = True
 
 # Show menu bar?
 show_bar = True
@@ -38,7 +39,9 @@ def initialize_terminal():
 try:
     if show_bar:
         initialize_terminal()
-        
+    
+    if eigenmath_true:
+        em=eigenmath.EigenMath(300*1024)
     pc_display = PicoDisplay(320, 320, multithreading)
     
     machine.lightsleep(50)
