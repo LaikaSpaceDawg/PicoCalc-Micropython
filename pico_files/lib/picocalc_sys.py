@@ -294,7 +294,7 @@ def www_upload(file_name_to_upload):
             file_content = file.read()
 
         headers = {'Content-Type': 'application/octet-stream'}
-        response = urequests.put(webdav_url + '/' + file_name_to_upload,
+        response = urequests.put(webdav_url + '/' + file_name_to_upload.split("/")[-1],
                                  headers=headers,
                                  data=file_content,
                                  auth=(username, password))
