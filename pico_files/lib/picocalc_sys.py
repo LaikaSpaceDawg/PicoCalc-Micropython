@@ -280,26 +280,48 @@ def read_config(file_path):
         print(f"An error occurred: {e}")
     return
 
-# Upload function using WebDAV
 def www_upload(file_name_to_upload):
+    # Ensure your read_config function is already defined in your codebase
     config = read_config("/www_conf.txt")
     if not config:
         print("Could not read config. Exiting.")
         return
+    webdav_url, username, password = config  # Assuming the config file yields a URL, username, and password
 
-    webdav_url, username, password = config
+    # Adjust the upload endpoint to match your PHP script
+    post_url = webdav_url + '/upload.php'  # Make sure '/upload.php' is the correct path
 
     try:
         with open(file_name_to_upload, 'rb') as file:
             file_content = file.read()
 
-        headers = {'Content-Type': 'application/octet-stream'}
-        response = urequests.put(webdav_url + '/' + file_name_to_upload.split("/")[-1],
-                                 headers=headers,
-                                 data=file_content,
-                                 auth=(username, password))
+        # Create a simple multipart form-data content, similar to a web form post
+        boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+        prefix = '--' + boundary
+        suffix = '--' + boundary + '--'
+
+        # Construct the body for the POST request
+        data = (
+            f'{prefix}\r\n'
+            f'Content-Disposition: form-data; name="username"\r\n\r\n'
+            f'{username}\r\n'
+            f'{prefix}\r\n'
+            f'Content-Disposition: form-data; name="password"\r\n\r\n'
+            f'{password}\r\n'
+            f'{prefix}\r\n'
+            f'Content-Disposition: form-data; name="fileToUpload"; filename="{file_name_to_upload.split("/")[-1]}"\r\n'
+            f'Content-Type: application/octet-stream\r\n\r\n'
+        ).encode() + file_content + f'\r\n{suffix}\r\n'.encode()
+
+        headers = {
+            'Content-Type': f'multipart/form-data; boundary={boundary}'
+        }
+
+        # Send the POST request
+        response = urequests.post(post_url, headers=headers, data=data)
         print('Upload response:', response.status_code, response.content)
         response.close()
+
     except OSError as e:
         print('Failed to read file:', e)
     except Exception as e:
